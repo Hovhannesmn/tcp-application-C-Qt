@@ -19,7 +19,6 @@ std::vector<std::string> clientname;
 
 void wraitMessageName(int sockI)
 { 	
-
     std::string str = " ";
     std::string strname = "";
     char namesStr[500] = {0};
@@ -33,13 +32,10 @@ void wraitMessageName(int sockI)
                 strname.append(clientname[i]);
                 std::copy(strname.begin(),strname.end(),namesStr);
 
-
                 for(int j = 0; j < sockVect.size(); ++j){
                     if(i == j)
                         continue;
                     else{
-
-
                         std::cout << namesStr<< "\n";
                         send(sockVect[j],namesStr,strlen(namesStr),0);
                         std::cout<<"sockVect[j]"<<sockVect[j]<<std::endl;
@@ -68,28 +64,19 @@ void wraitMessageName(int sockI)
     }
  }
 
-
-
-
 void sendMessage(int sockId,char * message,int recverId)
-{ 
-
-			
+{ 		
 	if(sockId == 0){
 		for(int i = 0; i < sockVect.size(); ++i){
-            if(sockId == recverId)
-                continue;
-            else        
-                send(sockVect[i], message,strlen(message), 0 );	
+	    if(sockId == recverId)
+		continue;
+	    else        
+		send(sockVect[i], message,strlen(message), 0 );	
 		}
 	}else{
-
 		send(sockId,message,strlen(message),0); 
-}	
-
+	}	
 }
-
-
 
 void recvMessage(int sockId)
 {	
@@ -109,20 +96,16 @@ void recvMessage(int sockId)
               
                 clientname.erase(clientname.begin()+ i) ;
                }
-          }
-		
-            
+          }	
             return;
-        
+  
         }
 		for(int i = 0; i < sockVect.size(); i++){
 			if(sockId == sockVect[i] )
 				name= clientname[i];
-         //WrdMessageClient( sock, message    );
 		}
 
 		std::string strmass(buf);
-
 		strmass.erase (strmass.begin()+ strmass.find(":")+1, strmass.end());
 
 		for(int i = 0; i< sockVect.size(); i++){
@@ -134,17 +117,16 @@ void recvMessage(int sockId)
 			}
 		}
         if(sock != 0){
-            std::cout << "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD\n";
-            sendMessage(sockId,buf,sockId);
+            	sendMessage(sockId,buf,sockId);
         }
-		std::string mess(buf);
-		mess.erase(0,mess.find(":") + 1);
-		messegeAndName.append(name);
-		messegeAndName.append(mess);
-		std::copy(messegeAndName.begin(),messegeAndName.end(),message);
-		sendMessage(sock,message,sockId);
-		bzero(message,500);        
-		bzero(buf, 500); 
+	std::string mess(buf);
+	mess.erase(0,mess.find(":") + 1);
+	messegeAndName.append(name);
+	messegeAndName.append(mess);
+	std::copy(messegeAndName.begin(),messegeAndName.end(),message);
+	sendMessage(sock,message,sockId);
+	bzero(message,500);        
+	bzero(buf, 500); 
 	}
 }
 
@@ -155,18 +137,17 @@ int main(int argc, char *argv[])
 	struct sockaddr_in addr;
 	listener = socket(AF_INET, SOCK_STREAM, 0);
 
-	if(argc < 2)
-	{
+	if(argc < 2){
 		perror("socket");
 		exit(1);
 	}
+	
 	bzero((char*) &addr, sizeof(addr));
 	port = atoi(argv[1]);
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	if(bind(listener, (struct sockaddr *)&addr, sizeof(addr))<  0)
-	{
+	if(bind(listener, (struct sockaddr *)&addr, sizeof(addr))<  0){
 		perror("bind");
 		exit(2);
 	}
@@ -176,8 +157,7 @@ int main(int argc, char *argv[])
 	int i = 1;
 	while(1){
 		sock = accept(listener, NULL, NULL );
-		if(sock<0)
-		{
+		if(sock<0){
 			perror("accept");
 			exit(3);
 		}
@@ -186,12 +166,13 @@ int main(int argc, char *argv[])
 		std::string str3 =":";
 		std::string str2 = str.str();
 		std::string client;
+		
 		client.append(str1);
 		client.append(str2);
 		client.append(str3);	
 		clientname.push_back(client);
 		++i;
-        wraitMessageName(sock);
+        	wraitMessageName(sock);
 
 		std::thread* recvtrd=new std::thread(recvMessage,sock);
 		sockVect.push_back(sock);
